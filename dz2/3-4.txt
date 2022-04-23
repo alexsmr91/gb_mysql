@@ -1,0 +1,10 @@
+#Задание 3
+
+mysqldump -v -hlocalhost -uroot -p example > ~/dump.sql
+mysql -e "CREATE DATABASE sample"
+mysql -u root -p sample < ~/dump.sql
+
+
+#Задание 4
+
+mysqldump -v -hlocalhost -uroot -p mysql -B help_keyword --where="true limit 100" > ~/dump2.sql

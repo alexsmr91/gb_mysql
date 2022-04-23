@@ -1,0 +1,71 @@
+DROP DATABASE IF EXISTS avito;
+CREATE DATABASE IF NOT EXISTS avito;
+USE avito;
+
+CREATE TABLE IF NOT EXISTS users (
+	id SERIAL primary key,
+	email varchar(100) unique NOT NULL,
+	phone BIGINT UNSIGNED unique NOT NULL,
+	password_hash varchar(100) NOT NULL,
+	name varchar(100) NOT NULL,
+	photo varchar(100),
+	created_at DATETIME DEFAULT NOW(),
+	updated_at DATETIME ON UPDATE NOW()
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE IF NOT EXISTS categories (
+	id SERIAL primary key,
+	category_name varchar(100) NOT NULL
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE IF NOT EXISTS adverts (
+	id SERIAL primary key,
+	category_id BIGINT UNSIGNED DEFAULT 0 NOT NULL,
+	user_id BIGINT UNSIGNED DEFAULT 0 NOT NULL,
+	price BIGINT UNSIGNED DEFAULT 0 NOT NULL,
+	header varchar(200) NOT NULL,
+	body TEXT(3000) NOT NULL,
+	photos json NULL,
+	created_at DATETIME DEFAULT NOW(),
+	updated_at DATETIME ON UPDATE NOW(),
+	CONSTRAINT adverts_FK FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET DEFAULT ON UPDATE CASCADE,
+	CONSTRAINT adverts_FK_1 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET DEFAULT ON UPDATE CASCADE,
+	INDEX adverts_idx(header, body(568))
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE IF NOT EXISTS favorite_ads (
+	id SERIAL primary key,
+	user_id BIGINT UNSIGNED NOT NULL,
+	ad_id BIGINT UNSIGNED NOT NULL,
+	CONSTRAINT favorite_ads_FK FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT favorite_ads_FK_1 FOREIGN KEY (ad_id) REFERENCES adverts(id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS messages (
+	id SERIAL PRIMARY KEY,
+	from_user_id BIGINT UNSIGNED NOT NULL,
+	to_user_id BIGINT UNSIGNED NOT NULL,
+	body TEXT NOT NULL,
+	created_at DATETIME DEFAULT NOW(),
+	status ENUM('sended', 'readed'),
+	CONSTRAINT messages_FK FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT messages_FK_1 FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
